@@ -83,11 +83,37 @@ FROM Facilities
 /* Q6: You'd like to get the first and last name of the last member(s)
 who signed up. Try not to use the LIMIT clause for your solution. */
 
+SELECT firstname, surname, joindate
+FROM Members
+ORDER BY joindate DESC
+
+Darren Smith - 2012-09-26
+
+SELECT firstname, surname, joindate
+FROM  `Members` 
+WHERE joindate = ( 
+SELECT MAX(joindate) 
+FROM Members)
+
 
 /* Q7: Produce a list of all members who have used a tennis court.
 Include in your output the name of the court, and the name of the member
 formatted as a single column. Ensure no duplicate data, and order by
 the member name. */
+
+SELECT DISTINCT concat (m.firstname,' ', m.surname), f.name
+FROM Bookings as b
+INNER JOIN Facilities as f on b.facid = f.facid
+INNER JOIN Members as m ON m.memid = b.memid
+WHERE b.facid
+IN (0, 1)
+ORDER BY 1
+
+--From Slack channel:
+SELECT DISTINCT concat (m.firstname,' ', m.surname), f.name
+FROM Bookings as b
+INNER JOIN Facilities as f on b.facid = f.facid
+INNER JOIN Members as m ON m.memid = b.memid
 
 
 /* Q8: Produce a list of bookings on the day of 2012-09-14 which
@@ -97,9 +123,37 @@ the guest user's ID is always 0. Include in your output the name of the
 facility, the name of the member formatted as a single column, and the cost.
 Order by descending cost, and do not use any subqueries. */
 
+SELECT f.name, concat (m.firstname,' ', m.surname),
+
+CASE WHEN b.memid = 0
+THEN f.guestcost * b.slots
+ELSE f.membercost * slots
+END AS cost
+FROM Bookings b
+JOIN Members m ON b.memid = m.memid
+AND DATE( b.starttime ) =  '2012-09-14'
+JOIN Facilities f ON b.facid = f.facid
+HAVING Cost >30
+ORDER BY 3 DESC 
 
 /* Q9: This time, produce the same result as in Q8, but using a subquery. */
 
+
+SELECT sub.f_name, sub.Member_Name, sub.cost
+FROM (
+
+SELECT facilities.name AS f_name, concat (members.firstname,' ', members.surname) AS Member_Name, 
+CASE WHEN bookings.memid =0
+THEN facilities.guestcost * bookings.slots
+ELSE facilities.membercost * slots
+END AS cost
+FROM Bookings bookings
+JOIN Members members ON bookings.memid = members.memid
+AND DATE( bookings.starttime ) =  '2012-09-14'
+JOIN Facilities facilities ON bookings.facid = facilities.facid
+)sub
+WHERE sub.cost >30
+ORDER BY 3 DESC
 
 /* PART 2: SQLite
 /* We now want you to jump over to a local instance of the database on your machine. 
@@ -121,11 +175,37 @@ QUESTIONS:
 The output of facility name and total revenue, sorted by revenue. Remember
 that there's a different cost for guests and members! */
 
+SELECT f.name AS facility_name, SUM(
+    CASE WHEN book.memid = 0
+    THEN f.guestcost * book.slots
+    ELSE f.membercost * book.slots
+    END) AS tot_rev
+FROM Facilities f
+JOIN Bookings book ON f.facid = book.facid
+GROUP BY 1
+HAVING tot_rev < 1000
+ORDER BY 2
+
 /* Q11: Produce a report of members and who recommended them in alphabetic surname,firstname order */
+
+SELECT concat ( m.surname, + ',', + m.firstname) as member_name, m.memid, m.recommendedby
+FROM Members m
+GROUP BY member_name
 
 
 /* Q12: Find the facilities with their usage by member, but not guests */
+/*how often each member uses the facilities */
+
+SELECT m.memid, m.surname, m.facid,
+FROM Members m
+JOIN Bookings b on m.facid = b.facid
+GROUP BY 3
 
 
 /* Q13: Find the facilities usage by month, but not guests */
+SELECT b.facid, b.starttime
 
+SELECT strftime('%m', starttime)
+FROM b.starttime
+
+EXTRACT(month FROM b.starttime) as month
