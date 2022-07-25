@@ -208,6 +208,10 @@ GROUP BY b.facid
 /* Q13: Find the facilities usage by month, but not guests */
 SELECT f.name, b.starttime, (SUM(b.slots) * .5) AS hours_per_month
 FROM Bookings b
+INNER JOIN Facilities f on f.facid = b.facid
+WHERE b.memid != 0
+GROUP BY b.facid
+
 
 SELECT strftime('%m', starttime)
 FROM b.starttime
