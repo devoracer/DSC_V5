@@ -188,22 +188,26 @@ ORDER BY 2
 
 /* Q11: Produce a report of members and who recommended them in alphabetic surname,firstname order */
 
-SELECT concat ( m.surname, + ',', + m.firstname) as member_name, m.memid, m.recommendedby
+SELECT concat ( m.surname, + ', ', + m.firstname) as member_name, concat (m2.surname, + ', ', + m2.firstname) as recommender
 FROM Members m
-GROUP BY member_name
+LEFT JOIN Members m2 ON m.memid = m2.recommendedby
+WHERE m.surname != 'GUEST'
+ORDER BY recommender
 
 
 /* Q12: Find the facilities with their usage by member, but not guests */
 /*how often each member uses the facilities */
 
-SELECT m.memid, m.surname, m.facid,
-FROM Members m
-JOIN Bookings b on m.facid = b.facid
-GROUP BY 3
+SELECT f.name, SUM(b.slots)
+FROM Bookings b
+INNER JOIN Facilities f ON f.facid = b.facid
+WHERE b.memid != 0
+GROUP BY b.facid
 
 
 /* Q13: Find the facilities usage by month, but not guests */
-SELECT b.facid, b.starttime
+SELECT f.name, b.starttime, (SUM(b.slots) * .5) AS hours_per_month
+FROM Bookings b
 
 SELECT strftime('%m', starttime)
 FROM b.starttime
