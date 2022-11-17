@@ -22,7 +22,12 @@ The dataset comes from Kaggle. What is Kaggle? Kaggle allows users to find and p
  ### Modeling:
  
  The data proved to be very good for modeling.  The data ended up being very accurate, and also had little loss. From the graphs, I attempt to show how quickly the model gains accuracy, and how quickly it diminishes loss.  This was the case even with adding more layers and changing the batch sizes.
- For the model, I'll suggest using the first model named model. The other models, model1, and model2 aren't as accurate as model, and looking at the graphs, it seems model does a great job of decreasing loss and maximizing accuracy
+ For the model, I'll suggest using the first model named model. The other models, model1, and model2 aren't as accurate as model, and looking at the graphs, it seems model does a great job of decreasing loss and maximizing accuracy.
+ 
+ ### Additional thoughts on the project and next steps:
+ In analyzing and creating a model(s) for this project, it raised a few questions for me.  While the model was excellent at minimizing loss and maximizing accuracy, it wouldn't spit out numbers/frequencies that give a sense of when the instruments/sensors would fail.
+ For this, I think looking at implementing a K-Means clustering analysis with 2 clusters would help provide some more color on the sensors.  This would be more helpful for someone who is involved with these sensors and who depends on them to know if and when they can expect a failure in the water sensors.  By clustring the data, I should be able to see or have a good idea of what values the sensors can fail at.  The hope is that the clustering shows a distinct difference between what would be a normal working operation, and a smaller clustered not working or failed level.
+ 
  
  
  
